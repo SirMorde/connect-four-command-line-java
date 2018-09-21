@@ -39,7 +39,7 @@ public class Main {
     // global variables
     static int redWins = 0;
     static int blueWins = 0;
-    static int numOfTurns = 0;
+    static int numOfTurns = 1;
     static String currentTurn = "INIT";
     static String userInput = "INIT";
 
@@ -101,24 +101,58 @@ public class Main {
                     System.exit(0);
                 }
                 else {
-                    break;
+
+                    // Validate input for 1-7
+                    try{
+                        int chosenColumn = Integer.parseInt(userInput);
+                        if (chosenColumn < 1 || chosenColumn > 7) {
+                            System.out.println("ERROR: Input out of range. Please enter 1-7.");
+                            continue;
+                        }
+
+                        // else if column is full. If it is, display an error message
+
+                        // If win
+                        // Display win and break
+                        //System.out.println(currentTurn + " wins!");
+                        //break;
+
+                        // If board is full, restart game.
+                        if (numOfTurns == (ROW*COLUMN)) {
+                            System.out.println("Tie game! No one wins :(");
+                            break;
+                        }
+                    }
+                    catch (Exception e) {
+                        System.out.println("ERROR: Invalid input");
+                        continue;
+                    }
+                    numOfTurns++;
+                    showBoard(connectFourBoard);
                 }
             }
 
-            System.out.println("Play again? (y/n)");
-            // Prompt input
-            userInput = scanner.nextLine().toLowerCase().trim();
-            if (userInput.equals("n") || userInput.equals("no")) {
-                System.out.print("Exiting...");
-                System.exit(0);
+            while (true) {
+                System.out.println("Play again? (y/n)");
+                userInput = scanner.nextLine().toLowerCase().trim();
+                if(userInput.equals("y") || userInput.equals("yes")) {
+                    break;
+                }
+                else if (userInput.equals("n") || userInput.equals("no")) {
+                    System.out.print("Exiting...");
+                    System.exit(0);
+                }
+                else {
+                    System.out.println("Invalid input. Please enter yes/y or no/n");
+                }
             }
+
         }
     }
 
     public static void initializeBoard() {
-        // Reset number of turns and clear the board
         System.out.println("Clearing board...");
-        numOfTurns = 0;
+        numOfTurns = 1;
         connectFourBoard = new char[ROW][COLUMN];
     }
 
@@ -135,7 +169,7 @@ public class Main {
 
     public static void showBoard(char[][] connectFourBoard) {
         System.out.println("=====SCORE=====");
-        System.out.printf("Red:%-3s Blue:%-3s\n", redWins, blueWins);
+        System.out.printf("Red:%-3s Blue:%-3s Turn:%-3s\n", redWins, blueWins, numOfTurns);
         for (int i = 0; i < connectFourBoard.length; i++) {
             for (int j = 0; j < connectFourBoard[0].length; j++) {
                 System.out.print("|" + connectFourBoard[i][j]);
@@ -146,5 +180,19 @@ public class Main {
             System.out.print("==");
         }
         System.out.println();
+    }
+
+    public static void checkWin(char[][] connectFourBoard) {
+        for (int i = 0; i < connectFourBoard.length; i++) {
+            for (int j = 0; j < connectFourBoard[0].length; j++) {
+                System.out.print("|" + connectFourBoard[i][j]);
+
+                // Check for horizontal win to the right
+                // Check for vertical win below
+                // Check for diagonal win to the bottom right
+                // Check for diagonal win to the bottom left
+            }
+        }
+
     }
 }
