@@ -1,6 +1,6 @@
 /* Connect 4 game written in Java
 GitHub Repository: https://github.com/SirMorde/connect-four-command-line-java
-Author: Brandon Ma (prithvichakra@gmail.com)
+Author: Brandon Ma (branpm@gmail.com)
 
    To Do:
    - Fill in checkWin function
