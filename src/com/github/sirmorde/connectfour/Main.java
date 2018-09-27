@@ -3,10 +3,7 @@ GitHub Repository: https://github.com/SirMorde/connect-four-command-line-java
 Author: Brandon Ma (prithvichakra@gmail.com)
 
    To Do:
-   - Fill in checkWin function
-   - Check for horizontal win
-   - Check for vertical win
-   - Check for diagonal win
+   - Write test cases for checkWin function
 
    Completed Features:
    - Support for "restart" and "exit"
@@ -21,6 +18,10 @@ Author: Brandon Ma (prithvichakra@gmail.com)
    - Added list to keep track of which row in the chosen column to drop a chip in (9/25)
    - Alternate between player's turns (9/25)
    - Display game instructions (9/25)
+   - Fill in checkWin function (9/26)
+   - Check for horizontal win (9/26)
+   - Check for vertical win (9/26)
+   - Check for diagonal win (9/26)
 
    Commit Notes
    9/25:
@@ -33,6 +34,8 @@ Author: Brandon Ma (prithvichakra@gmail.com)
     - Refactored and removed unused code
     - Display game instructions
     - If less than 8 turns, no need to check for win yet
+    9/26:
+    - Implemented check win function, need to write test cases to test.
 */
 
 package com.github.sirmorde.connectfour;
@@ -132,7 +135,7 @@ public class Main {
                         }
                         else {
                             connectFourBoard[nextEmpty[chosenColumn]][chosenColumn] = currentTurn.charAt(0);
-                            if(numOfTurns > 8 && checkWin(connectFourBoard)) {
+                            if(numOfTurns > 6 && checkWin(connectFourBoard, nextEmpty[chosenColumn], chosenColumn)) {
                                 numOfTurns++;
                                 showBoard(connectFourBoard);
 
@@ -150,7 +153,7 @@ public class Main {
                         }
                     }
                     catch(Exception e) {
-                        System.out.println("ERROR: Invalid input");
+                        System.out.println("ERROR: Invalid input " + e);
                         continue;
                     }
 
@@ -224,17 +227,108 @@ public class Main {
         System.out.println();
     }
 
-    public static boolean checkWin(char[][] connectFourBoard) {
-//        for (int i = 0; i < connectFourBoard.length; i++) {
-//            for (int j = 0; j < connectFourBoard[0].length; j++) {
-//                System.out.print("|" + connectFourBoard[i][j]);
-//
-//                // Check for horizontal win to the right
-//                // Check for vertical win below
-//                // Check for diagonal win to the bottom right
-//                // Check for diagonal win to the bottom left
-//            }
-//        }
-        return true;
+    public static boolean checkWin(char[][] connectFourBoard, int chosenRow, int chosenColumn) {
+
+        //System.out.println("INSIDE CHECKWIN!!"); //DEBUG
+
+        // === HORIZONTAL SEARCH ===
+        int currentColumn = chosenColumn;
+        int count = 0;
+        // DEBUG
+        // System.out.println("chosenrow: " + chosenRow + " currentColumn: " + currentColumn + " connectFourBoard[chosenRow][currentColumn]: " + connectFourBoard[chosenRow][currentColumn]);
+        // DEBUG
+        // System.out.println("currentTurn.charAt(0): " + currentTurn.charAt(0));
+
+        // Search horizontally to the right
+        while(currentColumn < connectFourBoard[0].length && connectFourBoard[chosenRow][currentColumn] == currentTurn.charAt(0)) {
+            currentColumn++;
+            count++;
+        }
+
+        // Search horizontally to the left
+        currentColumn = chosenColumn-1;
+        while(currentColumn >= 0 && connectFourBoard[chosenRow][currentColumn] == currentTurn.charAt(0)) {
+            currentColumn--;
+            count++;
+        }
+
+        //System.out.println("count is: " + count); //DEBUG
+        if(count >= 4) {
+            //System.out.println("horizontal win!!!"); //DEBUG
+            return true;
+        }
+
+        // === VERTICAL SEARCH ===
+        // Only need to search below
+        count = 0;
+        int currentRow = chosenRow;
+        while(currentRow < connectFourBoard.length && connectFourBoard[currentRow][chosenColumn] == currentTurn.charAt(0)) {
+            currentRow++;
+            count++;
+        }
+
+        //System.out.println("count is: " + count); //DEBUG
+        if(count >= 4) {
+            //System.out.println("vertical win!!!"); //DEBUG
+            return true;
+        }
+
+        // == DIAGONAL SEARCH 1 - Top left to bottom right ==
+        // Search down and to the right
+        count = 0;
+        currentRow = chosenRow;
+        currentColumn = chosenColumn;
+        while(currentRow < connectFourBoard.length && currentColumn < connectFourBoard[0].length && connectFourBoard[currentRow][currentColumn] == currentTurn.charAt(0)) {
+            currentRow++;
+            currentColumn++;
+            count++;
+        }
+
+        // Search up and to the left - Make sure we are not in the topmost row or leftmost column
+        if(chosenRow > 0 && chosenColumn > 0)  {
+            currentRow = chosenRow-1;
+            currentColumn = chosenColumn-1;
+            while(currentRow >= 0 && currentColumn >= 0 && connectFourBoard[currentRow][currentColumn] == currentTurn.charAt(0)) {
+                currentRow--;
+                currentColumn--;
+                count++;
+            }
+        }
+
+        //System.out.println("count is: " + count); //DEBUG
+        if(count >= 4) {
+            //System.out.println("diagonal 1 win!!!"); //DEBUG
+            return true;
+        }
+
+        // === DIAGONAL SEARCH 2 - Top right to bottom Left ===
+        count = 0;
+        currentRow = chosenRow;
+        currentColumn = chosenColumn;
+
+        // Search up and to the right
+        while(currentRow >= 0 && currentColumn < connectFourBoard[0].length && connectFourBoard[currentRow][currentColumn] == currentTurn.charAt(0)) {
+            currentRow--;
+            currentColumn++;
+            count++;
+        }
+
+        // Search down and to the left -  Make sure we are not in the bottommost row or leftmost column
+        if (currentRow < connectFourBoard.length-1 && currentColumn > 0) {
+            currentRow = chosenRow+1;
+            currentColumn = chosenColumn-1;
+            while(currentRow < connectFourBoard.length && currentColumn >= 0 && connectFourBoard[currentRow][currentColumn] == currentTurn.charAt(0)) {
+                currentRow++;
+                currentColumn--;
+                count++;
+            }
+        }
+
+        //System.out.println("count is: " + count); //DEBUG
+        if(count >= 4) {
+            //System.out.println("diagonal 2 win!!!"); //DEBUG
+            return true;
+        }
+        return false;
     }
 }
